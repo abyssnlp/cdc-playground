@@ -42,8 +42,9 @@ val downloadFlinkJars = tasks.register("downloadFlinkJars") {
         configuration("io.delta:delta-flink:3.2.0")
         configuration("io.delta:delta-standalone_2.12:3.2.0")
         configuration("io.delta:delta-storage:3.2.0")
-//        configuration("org.apache.flink:flink-sql-parquet:1.16.0")
+        configuration("org.apache.flink:flink-sql-parquet:1.16.0")
         configuration("com.chuusai:shapeless_2.12:2.3.4")
+        configuration("")
     }
 
     inputs.files(configuration)

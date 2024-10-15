@@ -21,7 +21,14 @@ create table user_source (
 );
 
 -- create delta sink table
-create table all_users_sink (
+create catalog c_delta with (
+       'type' = 'delta-catalog',
+       'catalog-type' = 'in-memory'
+);
+
+create database c_delta.db_users;
+
+create table c_delta.db_users.all_users_sink (
     database_name string,
     table_name string,
     `id` decimal(20, 0) not null,
@@ -32,6 +39,12 @@ create table all_users_sink (
     primary key (database_name, table_name, `id`) not enforced
 ) with (
     'connector' = 'delta',
-    'catalog-type' = 'in-memory',
-    'table-path' = ''
-)
+    'table-path' = '/tmp/delta'
+);
+
+-- insert CDC data into delta lake
+insert into c_delta.db_users.all_users_sink
+select * from user_source;
+
+-- iceberg sink
+

@@ -11,4 +11,4 @@ Flink CDC MySQL
 - Supports AWS Glue catalog
 - Iceberg persistence options (DynamoDB, REST, JDBC)
 - Metadata about catalogs is stored in the `FileCatalogStore` persisted to disk
-- 
+- Delta flink cdc doesn't yet support update and delete changes
