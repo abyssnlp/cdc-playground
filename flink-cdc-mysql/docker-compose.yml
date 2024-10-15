@@ -1,0 +1,61 @@
+version: "2.1"
+
+services:
+  sql-client:
+    user: flink:flink
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bin/sql-client.sh
+    environment:
+      - MYSQL_HOST=mysql
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+        rest.address: jobmanager
+    volumes:
+      - ./delta:/tmp/delta
+    depends_on:
+      - jobmanager
+      - mysql
+
+  jobmanager:
+    user: flink:flink
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    command: jobmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+    volumes:
+      - ./delta:/tmp/delta
+
+  taskmanager:
+    user: flink:flink
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - jobmanager
+    command: taskmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 2
+    volumes:
+      - ./delta:/tmp/delta
+
+  mysql:
+    image: debezium/example-mysql:1.1
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_USER=scott
+      - MYSQL_PASSWORD=tiger
+

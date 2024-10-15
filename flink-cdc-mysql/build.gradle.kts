@@ -1,5 +1,3 @@
-import java.nio.file.Files
-
 plugins {
     id("java")
     id("application")
@@ -13,6 +11,9 @@ application {
 }
 
 repositories {
+    maven {
+        url = uri("https://repo.maven.apache.org/maven2")
+    }
     mavenCentral()
 }
 
@@ -33,9 +34,14 @@ val downloadFlinkJars = tasks.register("downloadFlinkJars") {
     val configuration = configurations.create("download-jars")
 
     dependencies {
-        configuration("com.ververica:flink-connector-mysql-cdc:3.0.1")
-        configuration("org.apache.flink:flink-shaded-hadoop-2-uber:2.7.5-10.0")
-        configuration("")
+        configuration("com.ververica:flink-connector-mysql-cdc:2.3.0")
+
+        configuration("org.apache.flink:flink-shaded-hadoop-2-uber:2.4.1-10.0")
+        configuration("io.delta:delta-flink:3.2.0")
+        configuration("io.delta:delta-standalone_2.12:3.2.0")
+        configuration("io.delta:delta-storage:3.2.0")
+        configuration("org.apache.flink:flink-sql-parquet:1.16.0")
+        configuration("com.chuusai:shapeless_2.12:2.3.4")
     }
 
     inputs.files(configuration)
