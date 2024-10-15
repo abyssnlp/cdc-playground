@@ -58,4 +58,4 @@ services:
       - MYSQL_ROOT_PASSWORD=123456
       - MYSQL_USER=scott
       - MYSQL_PASSWORD=tiger
-
+    restart: unless-stopped

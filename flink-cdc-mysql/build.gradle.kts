@@ -32,15 +32,17 @@ val downloadFlinkJars = tasks.register("downloadFlinkJars") {
 
     val downloadDir = File(buildDir, "download-jars")
     val configuration = configurations.create("download-jars")
+    val debeziumConnectorName = "debezium-connector-mysql"
+    val debeziumConnectorVersion = "1.9.7.Final"
 
     dependencies {
-        configuration("com.ververica:flink-connector-mysql-cdc:2.3.0")
-
+        configuration("com.ververica:flink-connector-mysql-cdc:2.4.1")
+        configuration("io.debezium:${debeziumConnectorName}:${debeziumConnectorVersion}")
         configuration("org.apache.flink:flink-shaded-hadoop-2-uber:2.4.1-10.0")
         configuration("io.delta:delta-flink:3.2.0")
         configuration("io.delta:delta-standalone_2.12:3.2.0")
         configuration("io.delta:delta-storage:3.2.0")
-        configuration("org.apache.flink:flink-sql-parquet:1.16.0")
+//        configuration("org.apache.flink:flink-sql-parquet:1.16.0")
         configuration("com.chuusai:shapeless_2.12:2.3.4")
     }
 
@@ -57,6 +59,24 @@ val downloadFlinkJars = tasks.register("downloadFlinkJars") {
                 from(file)
                 into(downloadDir)
             }
+        }
+
+        // Rename the debezium jar as it leads to issues
+        // https://github.com/apache/flink-cdc/issues/2340
+
+        val debeziumFileName = "${debeziumConnectorName}-${debeziumConnectorVersion}.jar"
+        val newFileName = "flink-dep-${debeziumFileName}"
+        val oldFile = File(downloadDir, debeziumFileName)
+
+        if (oldFile.exists()) {
+            val newFile = File(downloadDir, newFileName)
+            if (oldFile.renameTo(newFile)) {
+                println("Renamed $debeziumFileName to $newFileName")
+            } else {
+                println("Failed to rename $debeziumFileName to $newFileName")
+            }
+        } else {
+            println("File $debeziumFileName not found in the build directory!")
         }
 
         println("JARS downloaded to ${downloadDir.absolutePath}")
